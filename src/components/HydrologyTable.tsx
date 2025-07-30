@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import Typography from '@mui/material/Typography';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,57 +10,59 @@ import Paper from '@mui/material/Paper';
 
 import DataHour from '../interface/DataHour';
 
-export default function HydrologyTable( { data } : { data: DataHour[] } ) {
+interface HydrologyTableProps {
+  data: DataHour[] | null;
+  loading: boolean;
+  error: string | null;
+}
 
-  let [rows, setRows] = useState(Array<DataHour>)
+export default function HydrologyTable({ data, loading, error }: HydrologyTableProps) {
+  const rows = data ?? [];
 
-  let getRows = () => {
-    if (rows.length) {
-      return (
-        rows.map((row, idx) => (
-          <TableRow
-            key={idx}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-          >
-            <TableCell component="th" scope="row">
-              {row.Fecha}
-            </TableCell>
-            <TableCell align="center">{row.Mazar}</TableCell>
-            
-            {/* PENDIENTE: Valores a renderizar en cada celda  */}
-            
-            
-          </TableRow>
-        ))
-      )
-    } else {
-      return <TableRow><TableCell>No data</TableCell></TableRow>
-    }
-      
+  if (loading) {
+    return <Typography>Cargando datos...</Typography>;
+  }
+  if (error) {
+    return <Typography color="error">Error: {error}</Typography>;
   }
 
-  useEffect( ()=> {
-    setRows(data)
-  }, [data])
-  
-
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Fecha</TableCell>
-            <TableCell align='center'>Mazar</TableCell>
-            
-            {/* PENDIENTE: Cabeceras de las columnas  */}
-            
-
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {getRows()}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Fecha</TableCell>
+              <TableCell align="center">Mazar</TableCell>
+              <TableCell align="center">Molino</TableCell>
+              <TableCell align="center">Sopladora</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.length ? (
+              rows.map((row, idx) => (
+                <TableRow
+                  key={idx}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.Fecha}
+                  </TableCell>
+                  <TableCell align="center">{row.Mazar}</TableCell>
+                  <TableCell align="center">{row.Molino}</TableCell>
+                  <TableCell align="center">{row.Sopladora}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} align="center">No hay datos</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      
+    </>
   );
 }
+
